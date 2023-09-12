@@ -1,1 +1,2 @@
 # Trylest
+Python dosyaları gelecek
