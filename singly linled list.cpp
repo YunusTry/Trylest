@@ -35,7 +35,7 @@ void print(){
 
 void remove(){
 	int x;
-    printf("\nsilinmesini istediginiz ogrencinin nosunu giriniz:");
+    printf("Enter the data you want to delete:");
     scanf("%d", &x);
 
     node *temp = head;
@@ -52,7 +52,7 @@ void remove(){
 		temp = temp->next;
 	}
 	if (head->data ==NULL){
-		printf("aradýgýnýz data bulunmamakta");
+		printf("It is not available when you search");
 		return ;
 	}
 	prev->next = temp->next;
@@ -60,6 +60,7 @@ void remove(){
 	
 }
 int main(){
+	printf("welcome to linked list");
 	add(1);
 	add(2);
 	add(3);
