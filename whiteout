@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Donanım Yükseltme Hesaplayıcı</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      padding: 20px;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      position: absolute;
+      left: 20px;
+      top: 20px;
+    }
+    h2 {
+      text-align: center;
+    }
+    .donanim-group {
+      margin-bottom: 20px;
+    }
+    .donanim-group h3 {
+      margin-bottom: 10px;
+    }
+    .donanim {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .donanim div {
+      width: 80%;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+    }
+    .result-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #2c7be5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #1a5fd0;
+    }
+    .result-summary {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    body {
+  transform: scale(0.70);
+  transform-origin: top left;
+}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Donanım Yükseltme Hesaplayıcı</h2>
+
+  <div class="donanim-group">
+    <h3>Mızrakçı Donanımları</h3>
+    <div class="donanim">
+      <div>
+        <label>Kafalık</label>
+        <select id="headFrom"></select>
+        <select id="headTo"></select>
+        <div id="headResult" class="result-box"></div>
+      </div>
+      <div>
+        <label>Pusula</label>
+        <select id="compassFrom"></select>
+        <select id="compassTo"></select>
+        <div id="compassResult" class="result-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="donanim-group">
+    <h3>Piyade Donanımları</h3>
+    <div class="donanim">
+      <div>
+        <label>Göğüslük</label>
+        <select id="chestFrom"></select>
+        <select id="chestTo"></select>
+        <div id="chestResult" class="result-box"></div>
+      </div>
+      <div>
+        <label>Pantolon</label>
+        <select id="pantsFrom"></select>
+        <select id="pantsTo"></select>
+        <div id="pantsResult" class="result-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="donanim-group">
+    <h3>Nişancı Donanımları</h3>
+    <div class="donanim">
+      <div>
+        <label>Baston</label>
+        <select id="staffFrom"></select>
+        <select id="staffTo"></select>
+        <div id="staffResult" class="result-box"></div>
+      </div>
+      <div>
+        <label>Yüzük</label>
+        <select id="ringFrom"></select>
+        <select id="ringTo"></select>
+        <div id="ringResult" class="result-box"></div>
+      </div>
+    </div>
+  </div>
+  <label for="multiplier">Etkinlik Çarpanı:</label>
+<input type="number" id="multiplier" value="1" min="1">
+
+
+  <button onclick="hepsiHesapla()">HESAPLA</button>
+
+  <div id="summary" class="result-summary"></div>
+</div>
+
+<script>
+const levels = [
+  { code: 101, seviye: "Epic", puan: 0, alloy: 0, solution: 0, plans: 60, amber: 0 },
+  { code: 102, seviye: "Epic ★", puan: 3230, alloy: 0, solution: 0, plans: 70, amber: 0 },
+  { code: 103, seviye: "Epic ★★", puan: 3225, alloy: 6500, solution: 65, plans: 40, amber: 0 },
+  { code: 104, seviye: "Epic ★★★", puan: 3225, alloy: 8000, solution: 80, plans: 50, amber: 0 },
+  { code: 105, seviye: "Epic T1", puan: 3440, alloy: 10000, solution: 95, plans: 60, amber: 0 },
+  { code: 106, seviye: "Epic T1 ★", puan: 3440, alloy: 11000, solution: 110, plans: 70, amber: 0 },
+  { code: 107, seviye: "Epic T1 ★★", puan: 4085, alloy: 13000, solution: 130, plans: 85, amber: 0 },
+  { code: 108, seviye: "Epic T1 ★★★", puan: 4085, alloy: 15000, solution: 160, plans: 100, amber: 0 },
+  { code: 109, seviye: "Mythic", puan: 6250, alloy: 22000, solution: 220, plans: 40, amber: 0 },
+  { code: 110, seviye: "Mythic ★", puan: 6250, alloy: 23000, solution: 230, plans: 40, amber: 0 },
+  { code: 111, seviye: "Mythic ★★", puan: 6250, alloy: 25000, solution: 250, plans: 45, amber: 0 },
+  { code: 112, seviye: "Mythic ★★★", puan: 6250, alloy: 26000, solution: 260, plans: 45, amber: 0 },
+  { code: 113, seviye: "Mythic T1", puan: 6250, alloy: 28000, solution: 280, plans: 45, amber: 0 },
+  { code: 114, seviye: "Mythic T1 ★", puan: 6250, alloy: 28000, solution: 280, plans: 55, amber: 0 },
+  { code: 115, seviye: "Mythic T1 ★★", puan: 6250, alloy: 32000, solution: 320, plans: 55, amber: 0 },
+  { code: 116, seviye: "Mythic T1 ★★★", puan: 6250, alloy: 35000, solution: 340, plans: 60, amber: 0 },
+  { code: 117, seviye: "Mythic T2", puan: 6250, alloy: 38000, solution: 390, plans: 65, amber: 0 },
+  { code: 118, seviye: "Mythic T2 ★", puan: 6250, alloy: 43000, solution: 430, plans: 75, amber: 0 },
+  { code: 119, seviye: "Mythic T2 ★★", puan: 6250, alloy: 45000, solution: 460, plans: 80, amber: 0 },
+  { code: 120, seviye: "Mythic T2 ★★★", puan: 6250, alloy: 48000, solution: 500, plans: 85, amber: 0 },
+  { code: 121, seviye: "Legendary", puan: 9560, alloy: 50000, solution: 530, plans: 85, amber: 10 },
+  { code: 122, seviye: "Legendary ★", puan: 9560, alloy: 52000, solution: 560, plans: 90, amber: 10 },
+  { code: 123, seviye: "Legendary ★★", puan: 9560, alloy: 54000, solution: 590, plans: 95, amber: 10 },
+  { code: 124, seviye: "Legendary ★★★", puan: 9560, alloy: 56000, solution: 620, plans: 100, amber: 10 },
+  { code: 125, seviye: "Legendary T1", puan: 9560, alloy: 59000, solution: 670, plans: 110, amber: 15 },
+  { code: 126, seviye: "Legendary T1 ★", puan: 9560, alloy: 60000, solution: 700, plans: 115, amber: 15 },
+  { code: 127, seviye: "Legendary T1 ★★", puan: 9560, alloy: 63000, solution: 730, plans: 120, amber: 15 },
+  { code: 128, seviye: "Legendary T1 ★★★", puan: 9560, alloy: 65000, solution: 760, plans: 125, amber: 15 },
+  { code: 129, seviye: "Legendary T2", puan: 9560, alloy: 68000, solution: 800, plans: 130, amber: 15 },
+  { code: 130, seviye: "Legendary T2 ★", puan: 9560, alloy: 70000, solution: 830, plans: 135, amber: 15 },
+  { code: 131, seviye: "Legendary T2 ★★", puan: 9560, alloy: 74000, solution: 870, plans: 140, amber: 15 },
+  { code: 132, seviye: "Legendary T2 ★★★", puan: 9560, alloy: 76000, solution: 900, plans: 145, amber: 15 },
+  { code: 133, seviye: "Legendary T3", puan: 9560, alloy: 80000, solution: 950, plans: 150, amber: 20 },
+  { code: 134, seviye: "Legendary T3 ★", puan: 9560, alloy: 82000, solution: 990, plans: 155, amber: 20 },
+  { code: 135, seviye: "Legendary T3 ★★", puan: 9560, alloy: 83000, solution: 1030, plans: 160, amber: 25 },
+  { code: 136, seviye: "Legendary T3 ★★★", puan: 9560, alloy: 86000, solution: 1070, plans: 180, amber: 25 }
+];
+
+// Donanım adı, başlangıç ve hedef select ID'si, sonuç alanı ID'si
+const donanimlar = [
+  { ad: "Kafalık", from: "headFrom", to: "headTo", result: "headResult" },
+  { ad: "Pusula", from: "compassFrom", to: "compassTo", result: "compassResult" },
+  { ad: "Göğüslük", from: "chestFrom", to: "chestTo", result: "chestResult" },
+  { ad: "Pantolon", from: "pantsFrom", to: "pantsTo", result: "pantsResult" },
+  { ad: "Baston", from: "staffFrom", to: "staffTo", result: "staffResult" },
+  { ad: "Yüzük", from: "ringFrom", to: "ringTo", result: "ringResult" },
+];
+
+// Seçenekleri doldur
+donanimlar.forEach(d => {
+  const fromSel = document.getElementById(d.from);
+  const toSel = document.getElementById(d.to);
+  levels.forEach(level => {
+    const option = document.createElement('option');
+    option.value = level.code;
+    option.textContent = level.seviye;
+    fromSel.appendChild(option);
+    toSel.appendChild(option.cloneNode(true));
+  });
+  toSel.selectedIndex = levels.length - 1;
+});
+
+function hepsiHesapla() {
+    let toplamPuan = 0, toplamAlloy = 0, toplamSolution = 0, toplamPlans = 0, toplamAmber = 0;
+
+    const multiplier = parseFloat(document.getElementById('multiplier').value) || 1;
+
+    donanimlar.forEach(d => {
+        const from = parseInt(document.getElementById(d.from).value);
+        const to = parseInt(document.getElementById(d.to).value);
+
+        const resultEl = document.getElementById(d.result);
+        if (from >= to) {
+            resultEl.innerHTML = "<b>Hedef seviye, başlangıçtan yüksek olmalı.</b>";
+            return;
+        }
+
+        const aralik = levels.filter(l => l.code > from && l.code <= to);
+        const toplam = aralik.reduce((acc, l) => {
+            acc.puan += l.puan * multiplier;  // Çarpan sadece puana uygulanıyor
+            acc.alloy += l.alloy;  // Sabit kalıyor
+            acc.solution += l.solution;  // Sabit kalıyor
+            acc.plans += l.plans;  // Sabit kalıyor
+            acc.amber += l.amber;  // Sabit kalıyor
+            return acc;
+        }, { puan: 0, alloy: 0, solution: 0, plans: 0, amber: 0 });
+
+        toplamPuan += toplam.puan;
+        toplamAlloy += toplam.alloy;
+        toplamSolution += toplam.solution;
+        toplamPlans += toplam.plans;
+        toplamAmber += toplam.amber;
+
+        resultEl.innerHTML = `
+            <div><strong>Toplam Puan:</strong> ${toplam.puan}</div>
+            <div><strong>Sert Alaşım:</strong> ${toplam.alloy}</div>
+            <div><strong>Cila Çözeltisi:</strong> ${toplam.solution}</div>
+            <div><strong>Tasarım Planı:</strong> ${toplam.plans}</div>
+            <div><strong>Amber:</strong> ${toplam.amber}</div>
+        `;
+    });
+
+    document.getElementById('summary').innerHTML = `
+        <h3>Genel Toplam</h3>
+        <div><strong>Toplam Puan:</strong> ${toplamPuan}</div>
+        <div><strong>Sert Alaşım:</strong> ${toplamAlloy}</div>
+        <div><strong>Cila Çözeltisi:</strong> ${toplamSolution}</div>
+        <div><strong>Tasarım Planı:</strong> ${toplamPlans}</div>
+        <div><strong>Amber:</strong> ${toplamAmber}</div>
+    `;
+}
+
+
+</script>
+</body>
+</html>
